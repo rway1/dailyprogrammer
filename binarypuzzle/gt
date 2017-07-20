@@ -1,0 +1,38 @@
+#!/bin/bash
+
+if ! [ -f ./a.out ]
+then
+  echo "error: executable found"
+  exit 1
+fi
+
+if ! [ -x ./a.out ]
+then
+  echo "error: file not executable"
+  exit 1
+fi
+iterations=`ls tests/ | wc -l`
+iterations=$((iterations/3))
+if [ $# -eq 0 ]
+then
+  for (( i=1; i <= $iterations; i++ ))
+  do
+    ./a.out < ./tests/t$i.in > ./tests/t$i.myout
+    diff ./tests/t$i.out ./tests/t$i.myout 2>&1 1>/dev/null
+    if [ $? -eq 1 ]
+    then
+      echo "test $i failed"
+    else
+      echo "test $i passed"
+    fi
+  done
+else
+  ./a.out < ./tests/t$1.in > ./tests/t$1.myout
+  diff ./tests/t$1.out ./tests/t$1.myout
+  if [ $? -eq 1 ]
+  then
+    echo "test $1 failed"
+  else
+    echo "test $1 passed"
+  fi
+fi
